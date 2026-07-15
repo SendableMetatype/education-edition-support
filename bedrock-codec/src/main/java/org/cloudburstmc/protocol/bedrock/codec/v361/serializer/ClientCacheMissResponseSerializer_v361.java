@@ -32,7 +32,11 @@ public class ClientCacheMissResponseSerializer_v361 implements BedrockPacketSeri
         for (int i = 0; i < length; i++) {
             long id = buffer.readLongLE();
             ByteBuf blob = helper.readByteBuf(buffer);
-            blobs.put(id, blob);
+            ByteBuf previous = blobs.put(id, blob);
+            if (previous != null) {
+                // A duplicate blob id would otherwise orphan the replaced buffer.
+                previous.release();
+            }
         }
     }
 }

@@ -30,7 +30,10 @@ public class ResourcePackChunkDataPacket extends AbstractReferenceCounted implem
 
     @Override
     protected void deallocate() {
-        this.data.release();
+        // data can be null when deserialization failed partway through.
+        if (this.data != null) {
+            this.data.release();
+        }
     }
 
     @Override

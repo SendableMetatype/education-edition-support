@@ -16,17 +16,24 @@ public class CompressedBiomeDefinitionListSerializer_v582 implements BedrockPack
 
     @Override
     public void serialize(ByteBuf buffer, BedrockCodecHelper helper, CompressedBiomeDefinitionListPacket packet) {
+        // writeBytes() copies without transferring ownership, so the temporary
+        // buffer must be released here.
         ByteBuf compressed = buffer.alloc().ioBuffer();
-        this.writeCompressed(packet.getDefinitions(), compressed, helper);
+        try {
+            this.writeCompressed(packet.getDefinitions(), compressed, helper);
 
-        VarInts.writeUnsignedInt(buffer, compressed.readableBytes());
-        buffer.writeBytes(compressed);
+            VarInts.writeUnsignedInt(buffer, compressed.readableBytes());
+            buffer.writeBytes(compressed);
+        } finally {
+            compressed.release();
+        }
     }
 
     @Override
     public void deserialize(ByteBuf buffer, BedrockCodecHelper helper, CompressedBiomeDefinitionListPacket packet) {
         int length = VarInts.readUnsignedInt(buffer);
-        packet.setDefinitions(this.readCompressed(buffer.readBytes(length), helper, COMPRESSED_INDICATOR.length));
+        // A slice needs no separate release, unlike the readBytes() copy it replaces.
+        packet.setDefinitions(this.readCompressed(buffer.readSlice(length), helper, COMPRESSED_INDICATOR.length));
     }
 
     protected NbtMap readCompressed(ByteBuf buffer, BedrockCodecHelper helper, int length) {
@@ -70,14 +77,18 @@ public class CompressedBiomeDefinitionListSerializer_v582 implements BedrockPack
         buffer.writeShortLE(0);
 
         ByteBuf serialized = buffer.alloc().ioBuffer();
-        helper.writeTag(serialized, nbtMap);
+        try {
+            helper.writeTag(serialized, nbtMap);
 
-        while (serialized.isReadable()) {
-            int key = serialized.readUnsignedByte();
-            buffer.writeByte(key);
-            if (key == 0xff) {
-                buffer.writeShortLE(1);
+            while (serialized.isReadable()) {
+                int key = serialized.readUnsignedByte();
+                buffer.writeByte(key);
+                if (key == 0xff) {
+                    buffer.writeShortLE(1);
+                }
             }
+        } finally {
+            serialized.release();
         }
     }
 }

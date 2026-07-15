@@ -1,6 +1,7 @@
 package org.cloudburstmc.protocol.bedrock.codec;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.util.ReferenceCountUtil;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import lombok.AccessLevel;
@@ -67,7 +68,11 @@ public final class BedrockCodec {
         try {
             serializer.deserialize(buf, helper, packet);
         } catch (Exception e) {
-            throw new PacketSerializeException("Error whilst deserializing " + packet, e);
+            PacketSerializeException exception = new PacketSerializeException("Error whilst deserializing " + packet, e);
+            // Reference counted packets may already hold retained data from the
+            // partial deserialization; the caller never sees the instance.
+            ReferenceCountUtil.safeRelease(packet);
+            throw exception;
         }
 
         if (log.isDebugEnabled() && buf.isReadable()) {

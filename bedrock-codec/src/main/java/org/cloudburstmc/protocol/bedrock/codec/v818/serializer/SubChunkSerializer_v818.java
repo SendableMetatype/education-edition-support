@@ -37,22 +37,28 @@ public class SubChunkSerializer_v818 extends SubChunkSerializer_v486 {
     @Override
     protected SubChunkData deserializeSubChunk(ByteBuf buffer, BedrockCodecHelper helper, SubChunkPacket packet) {
         SubChunkData subChunk = new SubChunkData();
-        subChunk.setPosition(this.readSubChunkOffset(buffer));
-        subChunk.setResult(SubChunkRequestResult.values()[buffer.readByte()]);
-        if (subChunk.getResult() != SubChunkRequestResult.SUCCESS_ALL_AIR || !packet.isCacheEnabled()) {
-            subChunk.setData(helper.readByteBuf(buffer));
+        try {
+            subChunk.setPosition(this.readSubChunkOffset(buffer));
+            subChunk.setResult(SubChunkRequestResult.values()[buffer.readByte()]);
+            if (subChunk.getResult() != SubChunkRequestResult.SUCCESS_ALL_AIR || !packet.isCacheEnabled()) {
+                subChunk.setData(helper.readByteBuf(buffer));
+            }
+            subChunk.setHeightMapType(HeightMapDataType.values()[buffer.readByte()]);
+            if (subChunk.getHeightMapType() == HeightMapDataType.HAS_DATA) {
+                subChunk.setHeightMapData(buffer.readRetainedSlice(HEIGHT_MAP_LENGTH));
+            }
+            subChunk.setRenderHeightMapType(HeightMapDataType.values()[buffer.readByte()]);
+            if (subChunk.getRenderHeightMapType() == HeightMapDataType.HAS_DATA) {
+                subChunk.setRenderHeightMapData(buffer.readRetainedSlice(HEIGHT_MAP_LENGTH));
+            }
+            if (packet.isCacheEnabled()) {
+                subChunk.setBlobId(buffer.readLongLE());
+            }
+            return subChunk;
+        } catch (RuntimeException exception) {
+            // Not yet owned by the packet, so releasing the packet cannot free it.
+            subChunk.release();
+            throw exception;
         }
-        subChunk.setHeightMapType(HeightMapDataType.values()[buffer.readByte()]);
-        if (subChunk.getHeightMapType() == HeightMapDataType.HAS_DATA) {
-            subChunk.setHeightMapData(buffer.readRetainedSlice(HEIGHT_MAP_LENGTH));
-        }
-        subChunk.setRenderHeightMapType(HeightMapDataType.values()[buffer.readByte()]);
-        if (subChunk.getRenderHeightMapType() == HeightMapDataType.HAS_DATA) {
-            subChunk.setRenderHeightMapData(buffer.readRetainedSlice(HEIGHT_MAP_LENGTH));
-        }
-        if (packet.isCacheEnabled()) {
-            subChunk.setBlobId(buffer.readLongLE());
-        }
-        return subChunk;
     }
 }

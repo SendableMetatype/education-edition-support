@@ -42,11 +42,17 @@ public class SubChunkSerializer_v471 implements BedrockPacketSerializer<SubChunk
 
     protected SubChunkData deserializeSubChunk(ByteBuf buffer, BedrockCodecHelper helper, SubChunkPacket packet) {
         SubChunkData subChunk = new SubChunkData();
-        subChunk.setPosition(helper.readVector3i(buffer));
-        subChunk.setData(helper.readByteBuf(buffer));
-        subChunk.setResult(SubChunkRequestResult.values()[VarInts.readInt(buffer)]);
-        subChunk.setHeightMapType(HeightMapDataType.values()[buffer.readByte()]);
-        subChunk.setHeightMapData(buffer.readRetainedSlice(HEIGHT_MAP_LENGTH));
-        return subChunk;
+        try {
+            subChunk.setPosition(helper.readVector3i(buffer));
+            subChunk.setData(helper.readByteBuf(buffer));
+            subChunk.setResult(SubChunkRequestResult.values()[VarInts.readInt(buffer)]);
+            subChunk.setHeightMapType(HeightMapDataType.values()[buffer.readByte()]);
+            subChunk.setHeightMapData(buffer.readRetainedSlice(HEIGHT_MAP_LENGTH));
+            return subChunk;
+        } catch (RuntimeException exception) {
+            // Not yet owned by the packet, so releasing the packet cannot free it.
+            subChunk.release();
+            throw exception;
+        }
     }
 }
