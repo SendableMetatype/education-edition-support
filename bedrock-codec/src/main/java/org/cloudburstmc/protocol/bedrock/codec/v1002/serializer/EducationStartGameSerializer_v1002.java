@@ -11,7 +11,7 @@ import org.cloudburstmc.protocol.common.util.VarInts;
  * (Education 26.30).
  * <p>
  * Education 26.30 forked from the retail 26.30 snapshot, which predates the
- * {@code loggingChat} field v1001 (retail 26.33) writes before network
+ * {@code loggingChat} field v1001 (retail 26.33) writes after network
  * permissions; extending the v944 serializer keeps that field out. The client
  * additionally expects three Education string fields inside LevelSettings,
  * after {@code disablingPlayerInteractions} and before the editor connection

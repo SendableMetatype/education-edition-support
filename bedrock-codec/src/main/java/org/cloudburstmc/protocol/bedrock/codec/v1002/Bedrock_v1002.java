@@ -11,7 +11,7 @@ import org.cloudburstmc.protocol.bedrock.packet.StartGamePacket;
  * v1001 (retail 26.33) codec with the Education StartGamePacket wire format,
  * see {@link EducationStartGameSerializer_v1002}.
  */
-public class Bedrock_v1002 extends Bedrock_v1001 {
+public class Bedrock_v1002 {
 
     public static final BedrockCodec EDUCATION_CODEC = Bedrock_v1001.CODEC.toBuilder()
             .protocolVersion(1002)
