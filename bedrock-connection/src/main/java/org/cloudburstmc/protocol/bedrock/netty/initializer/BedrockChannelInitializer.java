@@ -2,7 +2,7 @@ package org.cloudburstmc.protocol.bedrock.netty.initializer;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
-import dev.sendablemetatype.netty.channel.raknet.config.RakChannelOption;
+import io.github.sendablemetatype.netty.channel.raknet.config.RakChannelOption;
 import org.cloudburstmc.protocol.bedrock.BedrockPeer;
 import org.cloudburstmc.protocol.bedrock.BedrockSession;
 import org.cloudburstmc.protocol.bedrock.data.CompressionAlgorithm;

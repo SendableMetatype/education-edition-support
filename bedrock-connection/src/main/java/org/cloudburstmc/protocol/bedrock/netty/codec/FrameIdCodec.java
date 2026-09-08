@@ -5,8 +5,8 @@ import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
-import dev.sendablemetatype.netty.channel.raknet.RakReliability;
-import dev.sendablemetatype.netty.channel.raknet.packet.RakMessage;
+import io.github.sendablemetatype.netty.channel.raknet.RakReliability;
+import io.github.sendablemetatype.netty.channel.raknet.packet.RakMessage;
 import org.cloudburstmc.protocol.bedrock.netty.BedrockBatchWrapper;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package org.cloudburstmc.protocol.bedrock;
 
 import lombok.experimental.UtilityClass;
-import dev.sendablemetatype.netty.channel.raknet.RakDisconnectReason;
+import io.github.sendablemetatype.netty.channel.raknet.RakDisconnectReason;
 
 import java.util.Collections;
 import java.util.EnumMap;
