@@ -1,21 +1,21 @@
-package org.cloudburstmc.protocol.bedrock.codec.v2168.serializer;
+package org.cloudburstmc.protocol.bedrock.codec.v2192.serializer;
 
 import io.netty.buffer.ByteBuf;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodecHelper;
-import org.cloudburstmc.protocol.bedrock.codec.v975.serializer.DimensionDataSerializer_v975;
+import org.cloudburstmc.protocol.bedrock.codec.v2168.serializer.DimensionDataSerializer_v2168;
 import org.cloudburstmc.protocol.bedrock.data.definitions.DimensionDefinition;
 import org.cloudburstmc.protocol.common.util.VarInts;
 
 import java.util.UUID;
 
-public class DimensionDataSerializer_v2168 extends DimensionDataSerializer_v975 {
+public class DimensionDataSerializer_v2192 extends DimensionDataSerializer_v2168 {
 
-    public static final DimensionDataSerializer_v2168 INSTANCE = new DimensionDataSerializer_v2168();
+    public static final DimensionDataSerializer_v2192 INSTANCE = new DimensionDataSerializer_v2192();
 
     @Override
     protected void writeDefinition(ByteBuf buffer, BedrockCodecHelper helper, DimensionDefinition definition) {
         super.writeDefinition(buffer, helper, definition);
-        helper.writeUuid(buffer, definition.getPackId());
+        helper.writeString(buffer, definition.getDefaultBiome());
     }
 
     @Override
@@ -26,6 +26,7 @@ public class DimensionDataSerializer_v2168 extends DimensionDataSerializer_v975 
         int generatorType = VarInts.readInt(buffer);
         int dimensionType = VarInts.readInt(buffer);
         UUID packId = helper.readUuid(buffer);
-        return new DimensionDefinition(id, maximumHeight, minimumHeight, generatorType, dimensionType, packId, null);
+        String defaultBiome = helper.readString(buffer);
+        return new DimensionDefinition(id, maximumHeight, minimumHeight, generatorType, dimensionType, packId, defaultBiome);
     }
 }
